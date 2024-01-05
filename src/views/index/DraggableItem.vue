@@ -4,8 +4,13 @@ import render from '@/components/render/render'
 
 const components = {
   itemBtns(h, currentItem, index, list) {
-    const { copyItem, deleteItem } = this.$listeners
+    const { activeItem, copyItem, deleteItem } = this.$listeners
     return [
+      <span class="drawing-item-edit" title="编辑" onClick={event => {
+        activeItem(currentItem, list); event.stopPropagation()
+      }}>
+        <i class="el-icon-edit" />
+      </span>,
       <span class="drawing-item-copy" title="复制" onClick={event => {
         copyItem(currentItem, list); event.stopPropagation()
       }}>
@@ -39,7 +44,7 @@ const layouts = {
             {child}
           </render>
         </el-form-item>
-        {components.itemBtns.apply(this, arguments)}
+        {/* {components.itemBtns.apply(this, arguments)} */}
       </el-col>
     )
   },
@@ -59,12 +64,11 @@ const layouts = {
       <el-col span={config.span}>
         <el-row gutter={config.gutter} class={className}
           nativeOnClick={event => { activeItem(currentItem); event.stopPropagation() }}>
-          <span class="component-name">{config.componentName}</span>
-          <draggable list={config.children || []} animation={340}
+          <draggable list={currentItem.children || []} animation={340}
             group="componentsGroup" class="drag-wrapper">
             {child}
           </draggable>
-          {components.itemBtns.apply(this, arguments)}
+          {/* {components.itemBtns.apply(this, arguments)} */}
         </el-row>
       </el-col>
     )
@@ -82,11 +86,11 @@ const layouts = {
 
 function renderChildren(h, currentItem, index, list) {
   const config = currentItem.__config__
-  if (!Array.isArray(config.children)) return null
-  return config.children.map((el, i) => {
+  if (!Array.isArray(currentItem.children)) return null
+  return currentItem.children.map((el, i) => {
     const layout = layouts[el.__config__.layout]
     if (layout) {
-      return layout.call(this, h, el, i, config.children)
+      return layout.call(this, h, el, i, currentItem.children)
     }
     return layoutIsNotFound.call(this)
   })

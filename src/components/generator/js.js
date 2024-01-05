@@ -85,8 +85,8 @@ function buildAttributes(scheme, dataList, ruleList, optionsList, methodList, pr
   }
 
   // 构建子级组件属性
-  if (config.children) {
-    config.children.forEach(item => {
+  if (scheme.children) {
+    scheme.children.forEach(item => {
       buildAttributes(item, dataList, ruleList, optionsList, methodList, propsList, uploadVarList, created)
     })
   }

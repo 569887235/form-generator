@@ -19,7 +19,7 @@ $lighterBlue: #409EFF;
   }
 }
 .components-draggable{
-  padding-bottom: 20px;
+  padding-bottom: 6px;
 }
 .components-title{
   font-size: 14px;
@@ -58,8 +58,12 @@ $lighterBlue: #409EFF;
   top: 0;
   height: 100vh;
 }
-.left-scrollbar{
-  height: calc(100vh - 42px);
+.left-scrollbar-top{
+  height: calc(60vh);
+  overflow: hidden;
+}
+.left-scrollbar-bottom{
+  height: calc(40vh - 42px);
   overflow: hidden;
 }
 .center-scrollbar {
@@ -90,12 +94,16 @@ $lighterBlue: #409EFF;
   height: 42px;
   text-align: right;
   padding: 0 15px;
-  box-sizing: border-box;;
+  box-sizing: border-box;
   border: 1px solid #f1e8e8;
   border-top: none;
   border-left: none;
   .delete-btn{
     color: #F56C6C;
+  }
+  .chosemode{
+    padding: 5px 0;
+    float: left;
   }
 }
 .logo-wrapper{
@@ -170,12 +178,6 @@ $lighterBlue: #409EFF;
       background: $selectedColor;
       border-radius: 6px;
     }
-    & > .drawing-item-copy, & > .drawing-item-delete{
-      display: initial;
-    }
-    & > .component-name{
-      color: $lighterBlue;
-    }
   }
   .el-form-item{
     margin-bottom: 15px;
@@ -197,32 +199,32 @@ $lighterBlue: #409EFF;
   box-sizing: border-box;
   border: 1px dashed #ccc;
   border-radius: 3px;
-  padding: 0 2px;
-  margin-bottom: 15px;
+  // padding: 0 2px;
+  // margin-bottom: 15px;
   .drawing-row-item {
-    margin-bottom: 2px;
+    // margin-bottom: 2px;
   }
   .el-col{
-    margin-top: 22px;
+    // margin-top: 22px;
   }
   .el-form-item{
     margin-bottom: 0;
   }
   .drag-wrapper{
-    min-height: 80px;
+    min-height: 22px;
   }
   &.active-from-item{
     border: 1px dashed $lighterBlue;
   }
-  .component-name{
-    position: absolute;
-    top: 0;
-    left: 0;
-    font-size: 12px;
-    color: #bbb;
-    display: inline-block;
-    padding: 0 6px;
-  }
+  // .component-name{
+  //   position: absolute;
+  //   top: 0;
+  //   left: 0;
+  //   font-size: 12px;
+  //   color: #bbb;
+  //   display: inline-block;
+  //   padding: 0 6px;
+  // }
 }
 .drawing-item, .drawing-row-item{
   &:hover {
@@ -230,42 +232,25 @@ $lighterBlue: #409EFF;
       background: $selectedColor;
       border-radius: 6px;
     }
-    & > .drawing-item-copy, & > .drawing-item-delete{
+  }
+}
+.left-scrollbar-bottom{
+  & .drawing-item-copy, & .drawing-item-delete{
+    &:hover {
       display: initial;
     }
   }
-  & > .drawing-item-copy, & > .drawing-item-delete{
-    display: none;
-    position: absolute;
-    top: -10px;
-    width: 22px;
-    height: 22px;
-    line-height: 22px;
-    text-align: center;
-    border-radius: 50%;
-    font-size: 12px;
-    border: 1px solid;
-    cursor: pointer;
-    z-index: 1;
-  }
-  & > .drawing-item-copy{
+  & .drawing-item-copy{
     right: 56px;
     border-color: $lighterBlue;
     color: $lighterBlue;
     background: #fff;
-    &:hover{
-      background: $lighterBlue;
-      color: #fff;
-    }
   }
-  & > .drawing-item-delete{
+  & .drawing-item-delete{
     right: 24px;
     border-color: #F56C6C;
     color: #F56C6C;
     background: #fff;
-    &:hover{
-      background: #F56C6C;
-      color: #fff;
-    }
+    margin-left: 8px;
   }
 }

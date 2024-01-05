@@ -104,7 +104,7 @@ const layouts = {
     const justify = scheme.type === 'default' ? '' : `justify="${scheme.justify}"`
     const align = scheme.type === 'default' ? '' : `align="${scheme.align}"`
     const gutter = scheme.gutter ? `:gutter="${scheme.gutter}"` : ''
-    const children = config.children.map(el => layouts[el.__config__.layout](el))
+    const children = scheme.children.map(el => layouts[el.__config__.layout](el))
     let str = `<el-row ${type} ${justify} ${align} ${gutter}>
       ${children.join('\n')}
     </el-row>`

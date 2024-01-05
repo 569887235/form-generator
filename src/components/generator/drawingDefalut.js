@@ -1,3 +1,11 @@
+/*
+ * @Description:
+ * @version:
+ * @Author: 周子尧9028
+ * @Date: 2021-05-30 23:58:16
+ * @LastEditors: 周子尧9028
+ * @LastEditTime: 2024-01-04 18:44:51
+ */
 export default [
   {
     __config__: {
@@ -25,6 +33,7 @@ export default [
     },
     __vModel__: 'mobile',
     placeholder: '请输入手机号',
+    componentName: '单行文本',
     style: { width: '100%' },
     clearable: true,
     'prefix-icon': 'el-icon-mobile',

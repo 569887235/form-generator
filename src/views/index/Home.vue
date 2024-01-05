@@ -3,13 +3,10 @@
     <div class="left-board">
       <div class="logo-wrapper">
         <div class="logo">
-          <img :src="logo" alt="logo"> Form Generator
-          <a class="github" href="https://github.com/JakHuang/form-generator" target="_blank">
-            <img src="https://github.githubassets.com/pinned-octocat.svg" alt>
-          </a>
+          <img :src="logo" alt="logo"> 模板设计工具
         </div>
       </div>
-      <el-scrollbar class="left-scrollbar">
+      <el-scrollbar class="left-scrollbar-top">
         <div class="components-list">
           <div v-for="(item, listIndex) in leftComponents" :key="listIndex">
             <div class="components-title">
@@ -40,10 +37,44 @@
           </div>
         </div>
       </el-scrollbar>
+      <el-scrollbar class="left-scrollbar-bottom">
+        <el-divider>页面元素</el-divider>
+        <el-tree
+          :data="drawingList"
+          :props="layoutTreeProps"
+          node-key="renderKey"
+          default-expand-all
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="activeFormItem"
+        >
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span>
+              <svg-icon class="node-icon" :icon-class="data.__config__?data.__config__.tagIcon:data.tagIcon" />
+              <span style="margin-left:5px;">{{ node.label }}</span>
+            </span>
+            <span>
+              <span class="drawing-item-copy" title="复制" @click="drawingItemCopy(data)">
+                <i class="el-icon-copy-document" />
+              </span>
+              <span class="drawing-item-delete" title="删除" @click="drawingItemDelete(data)">
+                <i class="el-icon-delete" />
+              </span>
+            </span>
+          </span>
+        </el-tree>
+      </el-scrollbar>
     </div>
 
     <div class="center-board">
       <div class="action-bar">
+        <span class="chosemode">
+          <el-radio-group v-model="mode" size="small">
+            <el-radio-button v-for="item in modes" :key="item.value" :label="item.value" border>
+              {{ item.label }}
+            </el-radio-button>
+          </el-radio-group>
+        </span>
         <el-button icon="el-icon-video-play" type="text" @click="run">
           运行
         </el-button>
@@ -130,7 +161,7 @@ import FormDrawer from './FormDrawer'
 import JsonDrawer from './JsonDrawer'
 import RightPanel from './RightPanel'
 import {
-  inputComponents, selectComponents, layoutComponents, formConf
+  inputComponents, layoutComponents, chartComponents, formConf
 } from '@/components/generator/config'
 import {
   exportDefault, beautifierConf, isNumberStr, titleCase, deepClone, isObjectObject
@@ -169,12 +200,31 @@ export default {
   },
   data() {
     return {
+      mode: 1, // 设计模式
+      modes: [
+        {
+          value: 1,
+          label: '打印单据'
+        },
+        {
+          value: 2,
+          label: '报表'
+        },
+        {
+          value: 3,
+          label: '表单'
+        },
+        {
+          value: 4,
+          label: '图表'
+        }
+      ],
       logo,
       idGlobal,
       formConf,
       inputComponents,
-      selectComponents,
       layoutComponents,
+      chartComponents,
       labelWidth: 100,
       drawingList: drawingDefalut,
       drawingData: {},
@@ -194,14 +244,20 @@ export default {
           list: inputComponents
         },
         {
-          title: '选择型组件',
-          list: selectComponents
-        },
-        {
           title: '布局型组件',
           list: layoutComponents
+        },
+        {
+          title: '图表型组件',
+          list: chartComponents
         }
-      ]
+      ],
+      layoutTreeProps: {
+        label(data, node) {
+          const config = data.__config__
+          return data.componentName // || `${config.label}: ${data.__vModel__}`
+        }
+      }
     }
   },
   computed: {
@@ -342,14 +398,17 @@ export default {
       config.formId = ++this.idGlobal
       config.renderKey = `${config.formId}${+new Date()}` // 改变renderKey后可以实现强制更新组件
       if (config.layout === 'colFormItem') {
+        item.componentName = `${config.label}${this.idGlobal}`
         item.__vModel__ = `field${this.idGlobal}`
       } else if (config.layout === 'rowFormItem') {
-        config.componentName = `row${this.idGlobal}`
-        !Array.isArray(config.children) && (config.children = [])
+        item.componentName = `容器${this.idGlobal}`
+        // config.componentName = `容器${this.idGlobal}`
+        // !Array.isArray(config.children) && (config.children = [])
+        !Array.isArray(item.children) && (item.children = [])
         delete config.label // rowFormItem无需配置label属性
       }
-      if (Array.isArray(config.children)) {
-        config.children = config.children.map(childItem => this.createIdAndKey(childItem))
+      if (Array.isArray(item.children)) {
+        item.children = item.children.map(childItem => this.createIdAndKey(childItem))
       }
       return item
     },
@@ -387,11 +446,19 @@ export default {
     drawingItemCopy(item, list) {
       let clone = deepClone(item)
       clone = this.createIdAndKey(clone)
-      list.push(clone)
+      if (Array.isArray(list)) {
+        list.push(clone)
+      } else {
+        this.drawingList.push(clone)
+      }
       this.activeFormItem(clone)
     },
     drawingItemDelete(index, list) {
-      list.splice(index, 1)
+      if (Array.isArray(list)) {
+        list.splice(index, 1)
+      } else {
+        this.drawingList.splice(index, 1)
+      }
       this.$nextTick(() => {
         const len = this.drawingList.length
         if (len) {
@@ -467,4 +534,12 @@ export default {
 
 <style lang='scss'>
 @import '@/styles/home';
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
 </style>

@@ -92,8 +92,8 @@ function renderFormItem(h, elementList) {
 
 function renderChildren(h, scheme) {
   const config = scheme.__config__
-  if (!Array.isArray(config.children)) return null
-  return renderFormItem.call(this, h, config.children)
+  if (!Array.isArray(scheme.children)) return null
+  return renderFormItem.call(this, h, scheme.children)
 }
 
 function setValue(event, config, scheme) {
@@ -141,7 +141,7 @@ export default {
       componentList.forEach(cur => {
         const config = cur.__config__
         if (cur.__vModel__) formData[cur.__vModel__] = config.defaultValue
-        if (config.children) this.initFormData(config.children, formData)
+        if (cur.children) this.initFormData(cur.children, formData)
       })
     },
     buildRules(componentList, rules) {
@@ -163,7 +163,7 @@ export default {
             return item
           })
         }
-        if (config.children) this.buildRules(config.children, rules)
+        if (cur.children) this.buildRules(cur.children, rules)
       })
     },
     resetForm() {

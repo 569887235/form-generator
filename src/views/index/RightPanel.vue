@@ -2,7 +2,7 @@
   <div class="right-board">
     <el-tabs v-model="currentTab" class="center-tabs">
       <el-tab-pane label="组件属性" name="field" />
-      <el-tab-pane label="表单属性" name="form" />
+      <el-tab-pane label="模板属性" name="form" />
     </el-tabs>
     <div class="field-box">
       <a class="document-link" target="_blank" :href="documentLink" title="查看组件文档">
@@ -31,11 +31,8 @@
               </el-option-group>
             </el-select>
           </el-form-item>
-          <el-form-item v-if="activeData.__vModel__!==undefined" label="字段名">
-            <el-input v-model="activeData.__vModel__" placeholder="请输入字段名（v-model）" />
-          </el-form-item>
-          <el-form-item v-if="activeData.__config__.componentName!==undefined" label="组件名">
-            {{ activeData.__config__.componentName }}
+          <el-form-item label="控件名">
+            <el-input v-model="activeData.componentName" placeholder="请输入控件名" />
           </el-form-item>
           <el-form-item v-if="activeData.__config__.label!==undefined" label="标题">
             <el-input v-model="activeData.__config__.label" placeholder="请输入标题" @input="changeRenderKey" />
@@ -57,8 +54,12 @@
           </el-form-item>
           <el-form-item v-if="activeData.__config__.layout==='rowFormItem'&&activeData.type!==undefined" label="布局模式">
             <el-radio-group v-model="activeData.type">
-              <el-radio-button label="default" />
-              <el-radio-button label="flex" />
+              <el-radio-button label="default">
+                默认
+              </el-radio-button>
+              <el-radio-button label="flex">
+                flex
+              </el-radio-button>
             </el-radio-group>
           </el-form-item>
           <el-form-item v-if="activeData.justify!==undefined&&activeData.type==='flex'" label="水平排列">
@@ -544,24 +545,7 @@
           <el-form-item v-if="activeData.__config__.required !== undefined" label="是否必填">
             <el-switch v-model="activeData.__config__.required" />
           </el-form-item>
-
-          <template v-if="activeData.__config__.layoutTree">
-            <el-divider>布局结构树</el-divider>
-            <el-tree
-              :data="[activeData.__config__]"
-              :props="layoutTreeProps"
-              node-key="renderKey"
-              default-expand-all
-              draggable
-            >
-              <span slot-scope="{ node, data }">
-                <span class="node-label">
-                  <svg-icon class="node-icon" :icon-class="data.__config__?data.__config__.tagIcon:data.tagIcon" />
-                  {{ node.label }}
-                </span>
-              </span>
-            </el-tree>
-          </template>
+          <!-- v-if="activeData.__config__.layoutTree" -->
 
           <template v-if="Array.isArray(activeData.__config__.regList)">
             <el-divider>正则校验</el-divider>
@@ -636,9 +620,6 @@
           <el-form-item label="表单按钮">
             <el-switch v-model="formConf.formBtns" />
           </el-form-item>
-          <el-form-item label="显示未选中组件边框">
-            <el-switch v-model="formConf.unFocusedComponentBorder" />
-          </el-form-item>
         </el-form>
       </el-scrollbar>
     </div>
@@ -654,7 +635,7 @@ import TreeNodeDialog from '@/views/index/TreeNodeDialog'
 import { isNumberStr } from '@/utils/index'
 import IconsDialog from './IconsDialog'
 import {
-  inputComponents, selectComponents, layoutComponents
+  inputComponents, layoutComponents, chartComponents
 } from '@/components/generator/config'
 import { saveFormConf } from '@/utils/db'
 
@@ -745,32 +726,26 @@ export default {
       ],
       justifyOptions: [
         {
-          label: 'start',
+          label: '居左',
           value: 'start'
         },
         {
-          label: 'end',
+          label: '居右',
           value: 'end'
         },
         {
-          label: 'center',
+          label: '居中',
           value: 'center'
         },
         {
-          label: 'space-around',
+          label: '平均分布',
           value: 'space-around'
         },
         {
-          label: 'space-between',
+          label: '顶头布局',
           value: 'space-between'
         }
-      ],
-      layoutTreeProps: {
-        label(data, node) {
-          const config = data.__config__
-          return data.componentName || `${config.label}: ${data.__vModel__}`
-        }
-      }
+      ]
     }
   },
   computed: {
@@ -797,10 +772,6 @@ export default {
         {
           label: '输入型组件',
           options: inputComponents
-        },
-        {
-          label: '选择型组件',
-          options: selectComponents
         }
       ]
     },
@@ -960,8 +931,8 @@ export default {
       this.activeData[this.currentIconModel] = val
     },
     tagChange(tagIcon) {
-      let target = inputComponents.find(item => item.__config__.tagIcon === tagIcon)
-      if (!target) target = selectComponents.find(item => item.__config__.tagIcon === tagIcon)
+      const target = inputComponents.find(item => item.__config__.tagIcon === tagIcon)
+      // if (!target) target = selectComponents.find(item => item.__config__.tagIcon === tagIcon)
       this.$emit('tag-change', target)
     },
     changeRenderKey() {
